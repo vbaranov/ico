@@ -92,8 +92,14 @@ contract Crowdsale is Haltable {
   /** How much tokens this crowdsale has credited for each investor address */
   mapping (address => uint256) public tokenAmountOf;
 
+  struct WhiteListData {
+    bool status;
+    uint minCap;
+    uint maxCap;
+  }
+
   /** Addresses that are allowed to invest even before ICO offical opens. For testing, for ICO partners, etc. */
-  mapping (address => bool) public earlyParticipantWhitelist;
+  mapping (address => WhiteListData) public earlyParticipantWhitelist;
 
   /** This is for manul testing for the interaction from owner wallet. You can set it to any value and inspect this in blockchain explorer to see that crowdsale interaction works. */
   uint public ownerTestValue;
@@ -181,7 +187,7 @@ contract Crowdsale is Haltable {
     // Determine if it's a good time to accept investment from this participant
     if(getState() == State.PreFunding) {
       // Are we whitelisted for early deposit
-      if(!earlyParticipantWhitelist[receiver]) {
+      if(!earlyParticipantWhitelist[receiver].status) {
         throw;
       }
     } else if(getState() == State.Funding) {
@@ -199,6 +205,15 @@ contract Crowdsale is Haltable {
 
     if(tokenAmount == 0) {
       // Dust transaction
+      throw;
+    }
+
+    if(tokenAmount < earlyParticipantWhitelist[receiver].minCap) {
+      // tokenAmount < minCap for investor
+      throw;
+    }
+    if(tokenAmount > earlyParticipantWhitelist[receiver].maxCap) {
+      // tokenAmount > maxCap for investor
       throw;
     }
 
@@ -378,8 +393,8 @@ contract Crowdsale is Haltable {
    *
    * TODO: Fix spelling error in the name
    */
-  function setEarlyParicipantWhitelist(address addr, bool status) onlyOwner {
-    earlyParticipantWhitelist[addr] = status;
+  function setEarlyParicipantWhitelist(address addr, bool status, uint minCap, uint maxCap) onlyOwner {
+    earlyParticipantWhitelist[addr] = WhiteListData({status:status, minCap:minCap, maxCap:minCap});
     Whitelisted(addr, status);
   }
 
