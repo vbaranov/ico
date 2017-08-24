@@ -193,6 +193,9 @@ contract Crowdsale is Haltable {
     } else if(getState() == State.Funding) {
       // Retail participants can only come in when the crowdsale is running
       // pass
+      if(!earlyParticipantWhitelist[receiver].status) {
+        throw;
+      }
     } else {
       // Unwanted state
       throw;
@@ -208,16 +211,16 @@ contract Crowdsale is Haltable {
       throw;
     }
 
-    if(getState() == State.PreFunding) {
-      if(tokenAmount < earlyParticipantWhitelist[receiver].minCap) {
-        // tokenAmount < minCap for investor
-        throw;
-      }
-      if(tokenAmount > earlyParticipantWhitelist[receiver].maxCap) {
-        // tokenAmount > maxCap for investor
-        throw;
-      }
+    //if(getState() == State.PreFunding) {
+    if(tokenAmount < earlyParticipantWhitelist[receiver].minCap) {
+      // tokenAmount < minCap for investor
+      throw;
     }
+    if(tokenAmount > earlyParticipantWhitelist[receiver].maxCap) {
+      // tokenAmount > maxCap for investor
+      throw;
+    }
+    //}
 
     if(investedAmountOf[receiver] == 0) {
        // A new investor
@@ -396,7 +399,7 @@ contract Crowdsale is Haltable {
    * TODO: Fix spelling error in the name
    */
   function setEarlyParicipantWhitelist(address addr, bool status, uint minCap, uint maxCap) onlyOwner {
-    earlyParticipantWhitelist[addr] = WhiteListData({status:status, minCap:minCap, maxCap:minCap});
+    earlyParticipantWhitelist[addr] = WhiteListData({status:status, minCap:minCap, maxCap:maxCap});
     Whitelisted(addr, status);
   }
 
