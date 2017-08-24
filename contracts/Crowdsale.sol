@@ -208,13 +208,15 @@ contract Crowdsale is Haltable {
       throw;
     }
 
-    if(tokenAmount < earlyParticipantWhitelist[receiver].minCap) {
-      // tokenAmount < minCap for investor
-      throw;
-    }
-    if(tokenAmount > earlyParticipantWhitelist[receiver].maxCap) {
-      // tokenAmount > maxCap for investor
-      throw;
+    if(getState() == State.PreFunding) {
+      if(tokenAmount < earlyParticipantWhitelist[receiver].minCap) {
+        // tokenAmount < minCap for investor
+        throw;
+      }
+      if(tokenAmount > earlyParticipantWhitelist[receiver].maxCap) {
+        // tokenAmount > maxCap for investor
+        throw;
+      }
     }
 
     if(investedAmountOf[receiver] == 0) {
