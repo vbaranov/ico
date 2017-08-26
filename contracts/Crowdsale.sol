@@ -403,6 +403,12 @@ contract Crowdsale is Haltable {
     Whitelisted(addr, status);
   }
 
+  function setEarlyParicipantsWhitelist(address[] addrs, bool[] statuses, uint[] minCaps, uint[] maxCaps) onlyOwner {
+    for (uint iterator = 0; iterator < addrs.length; iterator++) {
+      setEarlyParicipantWhitelist(addrs[iterator],statuses[iterator], minCaps[iterator], maxCaps[iterator]);
+    }
+  }
+
   /**
    * Allow crowdsale owner to close early or extend the crowdsale.
    *
