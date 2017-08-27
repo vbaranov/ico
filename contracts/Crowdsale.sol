@@ -229,7 +229,7 @@ contract Crowdsale is Haltable {
 
     for (var i = 0; i < joinedCrowsales.length; i++) {
       Crowdsale crowdsale = Crowdsale(joinedCrowsales[i]);
-      crowdsale.updateEarlyParicipantWhitelist(tokenAmount);
+      crowdsale.updateEarlyParicipantWhitelist(msg.sender, this, tokenAmount);
     }
 
     // Update investor
@@ -414,16 +414,16 @@ contract Crowdsale is Haltable {
     }
   }
 
-  function updateEarlyParicipantWhitelist(uint tokensBought) {
-    if (!earlyParticipantWhitelist[msg.sender].status) throw;
-    uint newMaxCap = earlyParticipantWhitelist[msg.sender].maxCap;
-    bool newStatus = earlyParticipantWhitelist[msg.sender].status;
-    uint testMaxCap = earlyParticipantWhitelist[msg.sender].maxCap - tokensBought;
-    if (testMaxCap < earlyParticipantWhitelist[msg.sender].minCap)
+  function updateEarlyParicipantWhitelist(address addr, address contractAddr, uint tokensBought) {
+    if (addr != msg.sender && contractAddr != msg.sender) throw;
+    uint newMaxCap = earlyParticipantWhitelist[addr].maxCap;
+    bool newStatus = earlyParticipantWhitelist[addr].status;
+    uint testMaxCap = earlyParticipantWhitelist[addr].maxCap - tokensBought;
+    if (testMaxCap < earlyParticipantWhitelist[addr].minCap)
       newStatus = false;
     else
       newMaxCap -= tokensBought;
-    earlyParticipantWhitelist[msg.sender] = WhiteListData({status:newStatus, minCap:earlyParticipantWhitelist[msg.sender].minCap, maxCap:newMaxCap});
+    earlyParticipantWhitelist[addr] = WhiteListData({status:newStatus, minCap:earlyParticipantWhitelist[addr].minCap, maxCap:newMaxCap});
   }
 
   /**
