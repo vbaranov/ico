@@ -409,6 +409,18 @@ contract Crowdsale is Haltable {
     }
   }
 
+  function updateEarlyParicipantWhitelist(uint tokensBought) {
+    if (!earlyParticipantWhitelist[msg.sender].status) throw;
+    uint newMaxCap = earlyParticipantWhitelist[msg.sender].maxCap;
+    bool newStatus = earlyParticipantWhitelist[msg.sender].status;
+    uint testMaxCap = earlyParticipantWhitelist[msg.sender].maxCap - tokensBought;
+    if (testMaxCap < earlyParticipantWhitelist[msg.sender].minCap)
+      newStatus = false;
+    else
+      newMaxCap -= tokensBought;
+    earlyParticipantWhitelist[msg.sender] = WhiteListData({status:newStatus, minCap:earlyParticipantWhitelist[msg.sender].minCap, maxCap:newMaxCap});
+  }
+
   /**
    * Allow crowdsale owner to close early or extend the crowdsale.
    *
