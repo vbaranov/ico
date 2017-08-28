@@ -212,11 +212,11 @@ contract Crowdsale is Haltable {
     }
 
     //if(getState() == State.PreFunding) {
-    if(tokenAmount < earlyParticipantWhitelist[receiver].minCap * 10**token.decimals()) {
+    if(tokenAmount < earlyParticipantWhitelist[receiver].minCap) {
       // tokenAmount < minCap for investor
       throw;
     }
-    if(tokenAmount > earlyParticipantWhitelist[receiver].maxCap * 10**token.decimals()) {
+    if(tokenAmount > earlyParticipantWhitelist[receiver].maxCap) {
       // tokenAmount > maxCap for investor
       throw;
     }
