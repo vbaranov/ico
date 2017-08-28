@@ -187,9 +187,7 @@ contract Crowdsale is Haltable {
     // Determine if it's a good time to accept investment from this participant
     if(getState() == State.PreFunding) {
       // Are we whitelisted for early deposit
-      if(!earlyParticipantWhitelist[receiver].status) {
-        throw;
-      }
+      throw;
     } else if(getState() == State.Funding) {
       // Retail participants can only come in when the crowdsale is running
       // pass
@@ -212,7 +210,6 @@ contract Crowdsale is Haltable {
     }
 
     uint multiplier = 10 ** token.decimals();
-    //if(getState() == State.PreFunding) {
     if(tokenAmount < earlyParticipantWhitelist[receiver].minCap.times(multiplier)) {
       // tokenAmount < minCap for investor
       throw;
