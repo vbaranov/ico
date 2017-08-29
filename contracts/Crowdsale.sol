@@ -584,6 +584,8 @@ contract Crowdsale is Haltable {
    */
   function isBreakingCap(uint weiAmount, uint tokenAmount, uint weiRaisedTotal, uint tokensSoldTotal) constant returns (bool limitBroken);
 
+  function isBreakingInvestorCap(address receiver, uint tokenAmount) constant returns (bool limitBroken);
+
   /**
    * Check if the current crowdsale is full and we can no longer sell any tokens.
    */
