@@ -33,6 +33,12 @@ contract MintedTokenCappedCrowdsale is Crowdsale {
     return tokensSoldTotal > maximumSellableTokens.times(multiplier);
   }
 
+  function isBreakingInvestorCap(address addr, uint tokenAmount) constant returns (bool limitBroken) {
+    uint multiplier = 10 ** token.decimals();
+    uint maxCap = earlyParticipantWhitelist[addr].maxCap;
+    return maxCap.times(multiplier) > tokenAmountOf[addr].plus(tokenAmount);
+  }
+
   function isCrowdsaleFull() public constant returns (bool) {
     uint multiplier = 10 ** token.decimals();
     return tokensSold >= maximumSellableTokens.times(multiplier);

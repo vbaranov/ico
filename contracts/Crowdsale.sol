@@ -246,6 +246,11 @@ contract Crowdsale is Haltable {
       throw;
     }
 
+    // Check that we did not bust the investor's cap
+    if(isBreakingInvestorCap(receiver, tokenAmount)) {
+      throw;
+    }
+
     assignTokens(receiver, tokenAmount);
 
     // Pocket the money
