@@ -218,7 +218,6 @@ contract Crowdsale is Haltable {
       // tokenAmount > maxCap for investor
       throw;
     }
-    //}
 
     if(investedAmountOf[receiver] == 0) {
        // A new investor
