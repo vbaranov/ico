@@ -182,7 +182,7 @@ contract Crowdsale is Haltable {
    * @param customerId (optional) UUID v4 to track the successful payments on the server side
    *
    */
-  function investInternal(address receiver, uint128 customerId, address[] joinedCrowsales) stopInEmergency private {
+  function investInternal(address receiver, uint128 customerId, address[] joinedCrowdsales) stopInEmergency private {
 
     // Determine if it's a good time to accept investment from this participant
     if(getState() == State.PreFunding) {
@@ -225,8 +225,8 @@ contract Crowdsale is Haltable {
        investorCount++;
     }
 
-    for (var i = 0; i < joinedCrowsales.length; i++) {
-      Crowdsale crowdsale = Crowdsale(joinedCrowsales[i]);
+    for (var i = 0; i < joinedCrowdsales.length; i++) {
+      Crowdsale crowdsale = Crowdsale(joinedCrowdsales[i]);
       crowdsale.updateEarlyParicipantWhitelist(msg.sender, this, tokenAmount);
     }
 
@@ -291,45 +291,45 @@ contract Crowdsale is Haltable {
   /**
    * Allow anonymous contributions to this crowdsale.
    */
-  function investWithSignedAddress(address addr, uint128 customerId, uint8 v, bytes32 r, bytes32 s, address[] joinedCrowsales) public payable {
+  function investWithSignedAddress(address addr, uint128 customerId, uint8 v, bytes32 r, bytes32 s, address[] joinedCrowdsales) public payable {
      bytes32 hash = sha256(addr);
      if (ecrecover(hash, v, r, s) != signerAddress) throw;
      if(customerId == 0) throw;  // UUIDv4 sanity check
-     investInternal(addr, customerId, joinedCrowsales);
+     investInternal(addr, customerId, joinedCrowdsales);
   }
 
   /**
    * Track who is the customer making the payment so we can send thank you email.
    */
-  function investWithCustomerId(address addr, uint128 customerId, address[] joinedCrowsales) public payable {
+  function investWithCustomerId(address addr, uint128 customerId, address[] joinedCrowdsales) public payable {
     if(requiredSignedAddress) throw; // Crowdsale allows only server-side signed participants
     if(customerId == 0) throw;  // UUIDv4 sanity check
-    investInternal(addr, customerId, joinedCrowsales);
+    investInternal(addr, customerId, joinedCrowdsales);
   }
 
   /**
    * Allow anonymous contributions to this crowdsale.
    */
-  function invest(address addr, address[] joinedCrowsales) public payable {
+  function invest(address addr, address[] joinedCrowdsales) public payable {
     if(requireCustomerId) throw; // Crowdsale needs to track partipants for thank you email
     if(requiredSignedAddress) throw; // Crowdsale allows only server-side signed participants
-    investInternal(addr, 0, joinedCrowsales);
+    investInternal(addr, 0, joinedCrowdsales);
   }
 
   /**
    * Invest to tokens, recognize the payer and clear his address.
    *
    */
-  function buyWithSignedAddress(uint128 customerId, uint8 v, bytes32 r, bytes32 s, address[] joinedCrowsales) public payable {
-    investWithSignedAddress(msg.sender, customerId, v, r, s, joinedCrowsales);
+  function buyWithSignedAddress(uint128 customerId, uint8 v, bytes32 r, bytes32 s, address[] joinedCrowdsales) public payable {
+    investWithSignedAddress(msg.sender, customerId, v, r, s, joinedCrowdsales);
   }
 
   /**
    * Invest to tokens, recognize the payer.
    *
    */
-  function buyWithCustomerId(uint128 customerId, address[] joinedCrowsales) public payable {
-    investWithCustomerId(msg.sender, customerId, joinedCrowsales);
+  function buyWithCustomerId(uint128 customerId, address[] joinedCrowdsales) public payable {
+    investWithCustomerId(msg.sender, customerId, joinedCrowdsales);
   }
 
   /**
@@ -337,8 +337,8 @@ contract Crowdsale is Haltable {
    *
    * Pay for funding, get invested tokens back in the sender address.
    */
-  function buy(address[] joinedCrowsales) public payable {
-    invest(msg.sender, joinedCrowsales);
+  function buy(address[] joinedCrowdsales) public payable {
+    invest(msg.sender, joinedCrowdsales);
   }
 
   /**
