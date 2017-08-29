@@ -229,6 +229,11 @@ contract Crowdsale is Haltable {
       crowdsale.updateEarlyParicipantWhitelist(msg.sender, this, tokenAmount);
     }
 
+    // Check that we did not bust the investor's cap
+    if(isBreakingInvestorCap(receiver, tokenAmount)) {
+      throw;
+    }
+
     // Update investor
     investedAmountOf[receiver] = investedAmountOf[receiver].plus(weiAmount);
     tokenAmountOf[receiver] = tokenAmountOf[receiver].plus(tokenAmount);
@@ -243,11 +248,6 @@ contract Crowdsale is Haltable {
 
     // Check that we did not bust the cap
     if(isBreakingCap(weiAmount, tokenAmount, weiRaised, tokensSold)) {
-      throw;
-    }
-
-    // Check that we did not bust the investor's cap
-    if(isBreakingInvestorCap(receiver, tokenAmount)) {
       throw;
     }
 
