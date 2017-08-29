@@ -37,6 +37,10 @@ contract MintedTokenCappedCrowdsale is Crowdsale {
     uint multiplier = 10 ** token.decimals();
     uint maxCap = earlyParticipantWhitelist[addr].maxCap;
     return tokenAmountOf[addr].plus(tokenAmount) > maxCap.times(multiplier);
+    if ((tokenAmountOf[addr] + tokenAmount) > maxCap.times(multiplier)) 
+      return true;
+    else 
+      return false;
   }
 
   function isCrowdsaleFull() public constant returns (bool) {
