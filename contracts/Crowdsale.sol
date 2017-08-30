@@ -420,11 +420,11 @@ contract Crowdsale is Haltable {
     if (addr != msg.sender && contractAddr != msg.sender) throw;
     uint newMaxCap = earlyParticipantWhitelist[addr].maxCap;
     bool newStatus = earlyParticipantWhitelist[addr].status;
-    uint testMaxCap = earlyParticipantWhitelist[addr].maxCap - tokensBought;
+    uint testMaxCap = earlyParticipantWhitelist[addr].maxCap - (tokensBought.divides(10**token.decimals()));
     if (testMaxCap < earlyParticipantWhitelist[addr].minCap)
       newStatus = false;
     else
-      newMaxCap -= tokensBought;
+      newMaxCap.minus(tokensBought);
     earlyParticipantWhitelist[addr] = WhiteListData({status:newStatus, minCap:earlyParticipantWhitelist[addr].minCap, maxCap:newMaxCap});
   }
 

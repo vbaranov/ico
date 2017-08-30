@@ -24,6 +24,13 @@ library SafeMathLib {
     return c;
   }
 
+  function divides(uint a, uint b) returns (uint) {
+    assert(b > 0);
+    uint c = a / b;
+    assert(a == b * c + a % b);
+    return c;
+  }
+
   function minus(uint a, uint b) returns (uint) {
     assert(b <= a);
     return a - b;
