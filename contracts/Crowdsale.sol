@@ -77,6 +77,8 @@ contract Crowdsale is Haltable {
   /* Do we need to have unique contributor id for each customer */
   bool public requireCustomerId;
 
+  address[] public joinedCrowdsales;
+
   /**
     * Do we verify that contributor has been cleared on the server side (accredited investors only).
     * This method was first used in FirstBlood crowdsale to ensure all contributors have accepted terms on sale (on the web).
@@ -182,7 +184,7 @@ contract Crowdsale is Haltable {
    * @param customerId (optional) UUID v4 to track the successful payments on the server side
    *
    */
-  function investInternal(address receiver, uint128 customerId, address[] joinedCrowdsales) stopInEmergency private {
+  function investInternal(address receiver, uint128 customerId) stopInEmergency private {
 
     // Determine if it's a good time to accept investment from this participant
     if(getState() == State.PreFunding) {
@@ -224,9 +226,17 @@ contract Crowdsale is Haltable {
        investorCount++;
     }
 
+    uint num = 0;
     for (var i = 0; i < joinedCrowdsales.length; i++) {
-      Crowdsale crowdsale = Crowdsale(joinedCrowdsales[i]);
-      crowdsale.updateEarlyParicipantWhitelist(msg.sender, this, tokenAmount);
+      if (this == joinedCrowdsales[i]) 
+        num = i;
+    }
+
+    if (num + 1 < joinedCrowdsales.length) {
+      for (var j = num + 1; j < joinedCrowdsales.length; j++) {
+        Crowdsale crowdsale = Crowdsale(joinedCrowdsales[j]);
+        crowdsale.updateEarlyParicipantWhitelist(msg.sender, this, tokenAmount);
+      }
     }
 
     // Check that we did not bust the investor's cap
@@ -295,45 +305,45 @@ contract Crowdsale is Haltable {
   /**
    * Allow anonymous contributions to this crowdsale.
    */
-  function investWithSignedAddress(address addr, uint128 customerId, uint8 v, bytes32 r, bytes32 s, address[] joinedCrowdsales) public payable {
+  function investWithSignedAddress(address addr, uint128 customerId, uint8 v, bytes32 r, bytes32 s) public payable {
      bytes32 hash = sha256(addr);
      if (ecrecover(hash, v, r, s) != signerAddress) throw;
      if(customerId == 0) throw;  // UUIDv4 sanity check
-     investInternal(addr, customerId, joinedCrowdsales);
+     investInternal(addr, customerId);
   }
 
   /**
    * Track who is the customer making the payment so we can send thank you email.
    */
-  function investWithCustomerId(address addr, uint128 customerId, address[] joinedCrowdsales) public payable {
+  function investWithCustomerId(address addr, uint128 customerId) public payable {
     if(requiredSignedAddress) throw; // Crowdsale allows only server-side signed participants
     if(customerId == 0) throw;  // UUIDv4 sanity check
-    investInternal(addr, customerId, joinedCrowdsales);
+    investInternal(addr, customerId);
   }
 
   /**
    * Allow anonymous contributions to this crowdsale.
    */
-  function invest(address addr, address[] joinedCrowdsales) public payable {
+  function invest(address addr) public payable {
     if(requireCustomerId) throw; // Crowdsale needs to track partipants for thank you email
     if(requiredSignedAddress) throw; // Crowdsale allows only server-side signed participants
-    investInternal(addr, 0, joinedCrowdsales);
+    investInternal(addr, 0);
   }
 
   /**
    * Invest to tokens, recognize the payer and clear his address.
    *
    */
-  function buyWithSignedAddress(uint128 customerId, uint8 v, bytes32 r, bytes32 s, address[] joinedCrowdsales) public payable {
-    investWithSignedAddress(msg.sender, customerId, v, r, s, joinedCrowdsales);
+  function buyWithSignedAddress(uint128 customerId, uint8 v, bytes32 r, bytes32 s) public payable {
+    investWithSignedAddress(msg.sender, customerId, v, r, s);
   }
 
   /**
    * Invest to tokens, recognize the payer.
    *
    */
-  function buyWithCustomerId(uint128 customerId, address[] joinedCrowdsales) public payable {
-    investWithCustomerId(msg.sender, customerId, joinedCrowdsales);
+  function buyWithCustomerId(uint128 customerId) public payable {
+    investWithCustomerId(msg.sender, customerId);
   }
 
   /**
@@ -341,8 +351,8 @@ contract Crowdsale is Haltable {
    *
    * Pay for funding, get invested tokens back in the sender address.
    */
-  function buy(address[] joinedCrowdsales) public payable {
-    invest(msg.sender, joinedCrowdsales);
+  function buy() public payable {
+    invest(msg.sender);
   }
 
   /**
@@ -427,6 +437,10 @@ contract Crowdsale is Haltable {
     else
       newMaxCap = newMaxCap.minus(tokensBought.divides(multiplier));
     earlyParticipantWhitelist[addr] = WhiteListData({status:newStatus, minCap:earlyParticipantWhitelist[addr].minCap, maxCap:newMaxCap});
+  }
+
+  function updateJoinedCrowdsales(address addr) onlyOwner {
+    joinedCrowdsales.push(addr);
   }
 
   /**
