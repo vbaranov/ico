@@ -27,6 +27,25 @@ contract MintableToken is StandardToken, Ownable {
   /** List of agents that are allowed to create new tokens */
   mapping (address => bool) public mintAgents;
 
+  struct ReservedTokensData {
+    bool isInTokens;
+    uint val;
+  }
+
+  mapping (address => ReservedTokensData) public reservedTokensList;
+  address[] public reservedTokensDestinations;
+
+  function setReservedTokensList(address addr, bool isInTokens, uint val) onlyOwner {
+    reservedTokensDestinations.push(addr);
+    reservedTokensList[addr] = ReservedTokensData({isInTokens:isInTokens, val:val});
+  }
+
+  function setReservedTokensListMultiple(address[] addrs, bool[] dims, uint[] vals) onlyOwner {
+    for (uint iterator = 0; iterator < addrs.length; iterator++) {
+      setReservedTokensList(addrs[iterator], dims[iterator], vals[iterator]);
+    }
+  }
+
   event MintingAgentChanged(address addr, bool state  );
 
   /**
