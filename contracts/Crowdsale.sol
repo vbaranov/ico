@@ -103,6 +103,14 @@ contract Crowdsale is Haltable {
   /** Addresses that are allowed to invest even before ICO offical opens. For testing, for ICO partners, etc. */
   mapping (address => WhiteListData) public earlyParticipantWhitelist;
 
+  struct ReservedTokensData {
+    bool isInTokens;
+    uint val;
+  }
+
+  mapping (address => ReservedTokensData) public reservedTokensList;
+  address[] public reservedTokensDestinations;
+
   /** This is for manul testing for the interaction from owner wallet. You can set it to any value and inspect this in blockchain explorer to see that crowdsale interaction works. */
   uint public ownerTestValue;
 
@@ -422,7 +430,18 @@ contract Crowdsale is Haltable {
 
   function setEarlyParicipantsWhitelist(address[] addrs, bool[] statuses, uint[] minCaps, uint[] maxCaps) onlyOwner {
     for (uint iterator = 0; iterator < addrs.length; iterator++) {
-      setEarlyParicipantWhitelist(addrs[iterator],statuses[iterator], minCaps[iterator], maxCaps[iterator]);
+      setEarlyParicipantWhitelist(addrs[iterator], statuses[iterator], minCaps[iterator], maxCaps[iterator]);
+    }
+  }
+
+  function setReservedTokensList(address addr, bool isInTokens, uint val) onlyOwner {
+    reservedTokensDestinations.push(addr);
+    reservedTokensList[addr] = ReservedTokensData({isInTokens:isInTokens, val:val});
+  }
+
+  function setReservedTokensListMultiple(address[] addrs, bool[] dims, uint[] vals) onlyOwner {
+    for (uint iterator = 0; iterator < addrs.length; iterator++) {
+      setReservedTokensList(addrs[iterator], dims[iterator], val[iterator]);
     }
   }
 
