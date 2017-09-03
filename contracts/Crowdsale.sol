@@ -441,7 +441,7 @@ contract Crowdsale is Haltable {
 
   function setReservedTokensListMultiple(address[] addrs, bool[] dims, uint[] vals) onlyOwner {
     for (uint iterator = 0; iterator < addrs.length; iterator++) {
-      setReservedTokensList(addrs[iterator], dims[iterator], val[iterator]);
+      setReservedTokensList(addrs[iterator], dims[iterator], vals[iterator]);
     }
   }
 
