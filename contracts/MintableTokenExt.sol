@@ -18,7 +18,7 @@ pragma solidity ^0.4.6;
  * Only mint agents, contracts whitelisted by owner, can mint new tokens.
  *
  */
-contract MintableToken is StandardToken, Ownable {
+contract MintableTokenExt is StandardToken, Ownable {
 
   using SafeMathLib for uint;
 
@@ -28,6 +28,35 @@ contract MintableToken is StandardToken, Ownable {
   mapping (address => bool) public mintAgents;
 
   event MintingAgentChanged(address addr, bool state  );
+
+  struct ReservedTokensData {
+    bool isInTokens;
+    uint val;
+  }
+
+  mapping (address => ReservedTokensData) public reservedTokensList;
+  address[] public reservedTokensDestinations;
+  uint public reservedTokensDestinationsLen = 0;
+
+  function setReservedTokensList(address addr, bool isInTokens, uint val) onlyOwner {
+    reservedTokensDestinations.push(addr);
+    reservedTokensDestinationsLen++;
+    reservedTokensList[addr] = ReservedTokensData({isInTokens:isInTokens, val:val});
+  }
+
+  function getReservedTokensListVal(address addr) constant returns (uint val) {
+    return reservedTokensList[addr].val;
+  }
+
+  function getReservedTokensListDim(address addr) constant returns (bool isInTokens) {
+    return reservedTokensList[addr].isInTokens;
+  }
+
+  function setReservedTokensListMultiple(address[] addrs, bool[] dims, uint[] vals) onlyOwner {
+    for (uint iterator = 0; iterator < addrs.length; iterator++) {
+      setReservedTokensList(addrs[iterator], dims[iterator], vals[iterator]);
+    }
+  }
 
   /**
    * Create new tokens and allocate them to an address..

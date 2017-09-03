@@ -25,7 +25,7 @@ import "./FractionalERC20.sol";
  * - different investment policies (require server side customer id, allow only whitelisted addresses)
  *
  */
-contract Crowdsale is Haltable {
+contract CrowdsaleExt is Haltable {
 
   /* Max investment count when we are still allowed to change the multisig address */
   uint public MAX_INVESTMENTS_BEFORE_MULTISIG_CHANGE = 5;
@@ -77,6 +77,8 @@ contract Crowdsale is Haltable {
   /* Do we need to have unique contributor id for each customer */
   bool public requireCustomerId;
 
+  address[] public joinedCrowdsales;
+
   /**
     * Do we verify that contributor has been cleared on the server side (accredited investors only).
     * This method was first used in FirstBlood crowdsale to ensure all contributors have accepted terms on sale (on the web).
@@ -92,8 +94,14 @@ contract Crowdsale is Haltable {
   /** How much tokens this crowdsale has credited for each investor address */
   mapping (address => uint256) public tokenAmountOf;
 
+  struct WhiteListData {
+    bool status;
+    uint minCap;
+    uint maxCap;
+  }
+
   /** Addresses that are allowed to invest even before ICO offical opens. For testing, for ICO partners, etc. */
-  mapping (address => bool) public earlyParticipantWhitelist;
+  mapping (address => WhiteListData) public earlyParticipantWhitelist;
 
   /** This is for manul testing for the interaction from owner wallet. You can set it to any value and inspect this in blockchain explorer to see that crowdsale interaction works. */
   uint public ownerTestValue;
@@ -125,7 +133,7 @@ contract Crowdsale is Haltable {
   // Crowdsale end time has been changed
   event EndsAtChanged(uint newEndsAt);
 
-  function Crowdsale(address _token, PricingStrategy _pricingStrategy, address _multisigWallet, uint _start, uint _end, uint _minimumFundingGoal) {
+  function CrowdsaleExt(address _token, PricingStrategy _pricingStrategy, address _multisigWallet, uint _start, uint _end, uint _minimumFundingGoal) {
 
     owner = msg.sender;
 
@@ -181,12 +189,13 @@ contract Crowdsale is Haltable {
     // Determine if it's a good time to accept investment from this participant
     if(getState() == State.PreFunding) {
       // Are we whitelisted for early deposit
-      if(!earlyParticipantWhitelist[receiver]) {
-        throw;
-      }
+      throw;
     } else if(getState() == State.Funding) {
       // Retail participants can only come in when the crowdsale is running
       // pass
+      if(!earlyParticipantWhitelist[receiver].status) {
+        throw;
+      }
     } else {
       // Unwanted state
       throw;
@@ -202,9 +211,37 @@ contract Crowdsale is Haltable {
       throw;
     }
 
+    uint multiplier = 10 ** token.decimals();
+    if(tokenAmount < earlyParticipantWhitelist[receiver].minCap.times(multiplier)) {
+      // tokenAmount < minCap for investor
+      throw;
+    }
+    if(tokenAmount > earlyParticipantWhitelist[receiver].maxCap.times(multiplier)) {
+      // tokenAmount > maxCap for investor
+      throw;
+    }
+
     if(investedAmountOf[receiver] == 0) {
        // A new investor
        investorCount++;
+    }
+
+    uint num = 0;
+    for (var i = 0; i < joinedCrowdsales.length; i++) {
+      if (this == joinedCrowdsales[i]) 
+        num = i;
+    }
+
+    if (num + 1 < joinedCrowdsales.length) {
+      for (var j = num + 1; j < joinedCrowdsales.length; j++) {
+        CrowdsaleExt crowdsale = CrowdsaleExt(joinedCrowdsales[j]);
+        crowdsale.updateEarlyParicipantWhitelist(msg.sender, this, tokenAmount);
+      }
+    }
+
+    // Check that we did not bust the investor's cap
+    if(isBreakingInvestorCap(receiver, tokenAmount)) {
+      throw;
     }
 
     // Update investor
@@ -378,9 +415,32 @@ contract Crowdsale is Haltable {
    *
    * TODO: Fix spelling error in the name
    */
-  function setEarlyParicipantWhitelist(address addr, bool status) onlyOwner {
-    earlyParticipantWhitelist[addr] = status;
+  function setEarlyParicipantWhitelist(address addr, bool status, uint minCap, uint maxCap) onlyOwner {
+    earlyParticipantWhitelist[addr] = WhiteListData({status:status, minCap:minCap, maxCap:maxCap});
     Whitelisted(addr, status);
+  }
+
+  function setEarlyParicipantsWhitelist(address[] addrs, bool[] statuses, uint[] minCaps, uint[] maxCaps) onlyOwner {
+    for (uint iterator = 0; iterator < addrs.length; iterator++) {
+      setEarlyParicipantWhitelist(addrs[iterator], statuses[iterator], minCaps[iterator], maxCaps[iterator]);
+    }
+  }
+
+  function updateEarlyParicipantWhitelist(address addr, address contractAddr, uint tokensBought) {
+    if (addr != msg.sender && contractAddr != msg.sender) throw;
+    uint newMaxCap = earlyParticipantWhitelist[addr].maxCap;
+    bool newStatus = earlyParticipantWhitelist[addr].status;
+    uint multiplier = 10 ** token.decimals();
+    uint testMaxCap = earlyParticipantWhitelist[addr].maxCap.times(multiplier) - tokensBought;
+    if (testMaxCap < earlyParticipantWhitelist[addr].minCap.times(multiplier))
+      newStatus = false;
+    else
+      newMaxCap = newMaxCap.minus(tokensBought.divides(multiplier));
+    earlyParticipantWhitelist[addr] = WhiteListData({status:newStatus, minCap:earlyParticipantWhitelist[addr].minCap, maxCap:newMaxCap});
+  }
+
+  function updateJoinedCrowdsales(address addr) onlyOwner {
+    joinedCrowdsales.push(addr);
   }
 
   /**
@@ -538,6 +598,8 @@ contract Crowdsale is Haltable {
    * @return true if taking this investment would break our cap rules
    */
   function isBreakingCap(uint weiAmount, uint tokenAmount, uint weiRaisedTotal, uint tokensSoldTotal) constant returns (bool limitBroken);
+
+  function isBreakingInvestorCap(address receiver, uint tokenAmount) constant returns (bool limitBroken);
 
   /**
    * Check if the current crowdsale is full and we can no longer sell any tokens.

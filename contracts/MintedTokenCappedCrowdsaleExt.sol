@@ -6,8 +6,8 @@
 
 pragma solidity ^0.4.8;
 
-import "./Crowdsale.sol";
-import "./MintableToken.sol";
+import "./CrowdsaleExt.sol";
+import "./MintableTokenExt.sol";
 
 /**
  * ICO crowdsale contract that is capped by amout of tokens.
@@ -16,12 +16,12 @@ import "./MintableToken.sol";
  *
  *
  */
-contract MintedTokenCappedCrowdsale is Crowdsale {
+contract MintedTokenCappedCrowdsaleExt is CrowdsaleExt {
 
   /* Maximum amount of tokens this crowdsale can sell. */
   uint public maximumSellableTokens;
 
-  function MintedTokenCappedCrowdsale(address _token, PricingStrategy _pricingStrategy, address _multisigWallet, uint _start, uint _end, uint _minimumFundingGoal, uint _maximumSellableTokens) Crowdsale(_token, _pricingStrategy, _multisigWallet, _start, _end, _minimumFundingGoal) {
+  function MintedTokenCappedCrowdsaleExt(address _token, PricingStrategy _pricingStrategy, address _multisigWallet, uint _start, uint _end, uint _minimumFundingGoal, uint _maximumSellableTokens) CrowdsaleExt(_token, _pricingStrategy, _multisigWallet, _start, _end, _minimumFundingGoal) {
     maximumSellableTokens = _maximumSellableTokens;
   }
 
@@ -29,18 +29,26 @@ contract MintedTokenCappedCrowdsale is Crowdsale {
    * Called from invest() to confirm if the curret investment does not break our cap rule.
    */
   function isBreakingCap(uint weiAmount, uint tokenAmount, uint weiRaisedTotal, uint tokensSoldTotal) constant returns (bool limitBroken) {
-    return tokensSoldTotal > maximumSellableTokens;
+    uint multiplier = 10 ** token.decimals();
+    return tokensSoldTotal > maximumSellableTokens.times(multiplier);
+  }
+
+  function isBreakingInvestorCap(address addr, uint tokenAmount) constant returns (bool limitBroken) {
+    uint multiplier = 10 ** token.decimals();
+    uint maxCap = earlyParticipantWhitelist[addr].maxCap;
+    return (tokenAmountOf[addr].plus(tokenAmount)) > maxCap.times(multiplier);
   }
 
   function isCrowdsaleFull() public constant returns (bool) {
-    return tokensSold >= maximumSellableTokens;
+    uint multiplier = 10 ** token.decimals();
+    return tokensSold >= maximumSellableTokens.times(multiplier);
   }
 
   /**
    * Dynamically create tokens and assign them to the investor.
    */
   function assignTokens(address receiver, uint tokenAmount) private {
-    MintableToken mintableToken = MintableToken(token);
+    MintableTokenExt mintableToken = MintableTokenExt(token);
     mintableToken.mint(receiver, tokenAmount);
   }
 }
