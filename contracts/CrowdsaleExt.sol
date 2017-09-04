@@ -79,6 +79,8 @@ contract CrowdsaleExt is Haltable {
 
   address[] public joinedCrowdsales;
 
+  address public lastCrowdsale;
+
   /**
     * Do we verify that contributor has been cleared on the server side (accredited investors only).
     * This method was first used in FirstBlood crowdsale to ensure all contributors have accepted terms on sale (on the web).
@@ -443,9 +445,15 @@ contract CrowdsaleExt is Haltable {
     joinedCrowdsales.push(addr);
   }
 
+  function setLastCrowdsale(address addr) onlyOwner {
+    lastCrowdsale = addr;
+  }
+
   function updateJoinedCrowdsalesMultiple(address[] addrs) onlyOwner {
     for (uint iter = 0; iter < addrs.length; iter++) {
       joinedCrowdsales.push(addrs[iter]);
+      if (iter == addrs.length - 1)
+        setLastCrowdsale(addrs[iter]);
     }
   }
 
