@@ -6,7 +6,7 @@
 
 pragma solidity ^0.4.6;
 
-import "./SafeMathLib.sol";
+import "./SafeMathLibExt.sol";
 import "./CrowdsaleExt.sol";
 import "./CrowdsaleTokenExt.sol";
 
@@ -16,7 +16,7 @@ import "./CrowdsaleTokenExt.sol";
  * Unlock tokens.
  */
 contract ReservedTokensFinalizeAgent is FinalizeAgent {
-  using SafeMathLib for uint;
+  using SafeMathLibExt for uint;
   CrowdsaleTokenExt public token;
   CrowdsaleExt public crowdsale;
 
