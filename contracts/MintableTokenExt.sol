@@ -7,7 +7,7 @@
 import "zeppelin/contracts/token/ERC20.sol";
 import "zeppelin/contracts/ownership/Ownable.sol";
 import './StandardToken.sol';
-import "./SafeMathLib.sol";
+import "./SafeMathLibExt.sol";
 
 pragma solidity ^0.4.6;
 
@@ -20,7 +20,7 @@ pragma solidity ^0.4.6;
  */
 contract MintableTokenExt is StandardToken, Ownable {
 
-  using SafeMathLib for uint;
+  using SafeMathLibExt for uint;
 
   bool public mintingFinished = false;
 

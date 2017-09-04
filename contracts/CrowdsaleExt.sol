@@ -6,7 +6,7 @@
 
 pragma solidity ^0.4.8;
 
-import "./SafeMathLib.sol";
+import "./SafeMathLibExt.sol";
 import "./Haltable.sol";
 import "./PricingStrategy.sol";
 import "./FinalizeAgent.sol";
@@ -30,7 +30,7 @@ contract CrowdsaleExt is Haltable {
   /* Max investment count when we are still allowed to change the multisig address */
   uint public MAX_INVESTMENTS_BEFORE_MULTISIG_CHANGE = 5;
 
-  using SafeMathLib for uint;
+  using SafeMathLibExt for uint;
 
   /* The token we are selling */
   FractionalERC20 public token;
