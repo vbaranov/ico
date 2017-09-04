@@ -56,7 +56,6 @@ contract ReservedTokensFinalizeAgent is FinalizeAgent {
       if (!token.getReservedTokensListDim(token.reservedTokensDestinations(j))) {
         allocatedBonusInPercentage = tokensSold*token.getReservedTokensListVal(token.reservedTokensDestinations(j)).times(multiplier)/100;
         tokensSold = tokensSold.plus(allocatedBonusInPercentage);
-        // move reserved tokens
         token.mint(token.reservedTokensDestinations(j), allocatedBonusInPercentage);
       }
     }

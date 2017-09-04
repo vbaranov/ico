@@ -443,6 +443,12 @@ contract CrowdsaleExt is Haltable {
     joinedCrowdsales.push(addr);
   }
 
+  function updateJoinedCrowdsalesMultiple(address[] addrs) onlyOwner {
+    for (uint iter = 0; iter < addrs.length; iter++) {
+      joinedCrowdsales.push(addrs[iter]));
+    }
+  }
+
   /**
    * Allow crowdsale owner to close early or extend the crowdsale.
    *
