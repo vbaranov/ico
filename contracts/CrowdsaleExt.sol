@@ -78,6 +78,7 @@ contract CrowdsaleExt is Haltable {
   bool public requireCustomerId;
 
   address[] public joinedCrowdsales;
+  uint public joinedCrowdsalesLen = 0;
 
   address public lastCrowdsale;
 
@@ -229,13 +230,13 @@ contract CrowdsaleExt is Haltable {
     }
 
     uint num = 0;
-    for (var i = 0; i < joinedCrowdsales.length; i++) {
+    for (var i = 0; i < joinedCrowdsalesLen; i++) {
       if (this == joinedCrowdsales[i]) 
         num = i;
     }
 
-    if (num + 1 < joinedCrowdsales.length) {
-      for (var j = num + 1; j < joinedCrowdsales.length; j++) {
+    if (num + 1 < joinedCrowdsalesLen) {
+      for (var j = num + 1; j < joinedCrowdsalesLen; j++) {
         CrowdsaleExt crowdsale = CrowdsaleExt(joinedCrowdsales[j]);
         crowdsale.updateEarlyParicipantWhitelist(msg.sender, this, tokenAmount);
       }
@@ -442,16 +443,21 @@ contract CrowdsaleExt is Haltable {
   }
 
   function updateJoinedCrowdsales(address addr) onlyOwner {
-    joinedCrowdsales.push(addr);
+    joinedCrowdsales[joinedCrowdsalesLen++] = addr;
   }
 
   function setLastCrowdsale(address addr) onlyOwner {
     lastCrowdsale = addr;
   }
 
+  function clearJoinedCrowdsales() {
+    joinedCrowdsalesLen = 0;
+  }
+
   function updateJoinedCrowdsalesMultiple(address[] addrs) onlyOwner {
+    clearJoinedCrowdsales()
     for (uint iter = 0; iter < addrs.length; iter++) {
-      joinedCrowdsales.push(addrs[iter]);
+      joinedCrowdsales[joinedCrowdsalesLen++] = addrs[iter];
       if (iter == addrs.length - 1)
         setLastCrowdsale(addrs[iter]);
     }
