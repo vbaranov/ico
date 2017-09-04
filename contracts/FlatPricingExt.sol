@@ -12,14 +12,14 @@ import "./SafeMathLibExt.sol";
 /**
  * Fixed crowdsale pricing - everybody gets the same price.
  */
-contract FlatPricing is PricingStrategy {
+contract FlatPricingExt is PricingStrategy {
 
   using SafeMathLibExt for uint;
 
   /* How many weis one token costs */
   uint public oneTokenInWei;
 
-  function FlatPricing(uint _oneTokenInWei) {
+  function FlatPricingExt(uint _oneTokenInWei) {
     oneTokenInWei = _oneTokenInWei;
   }
 
