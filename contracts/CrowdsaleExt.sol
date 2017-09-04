@@ -445,7 +445,7 @@ contract CrowdsaleExt is Haltable {
 
   function updateJoinedCrowdsalesMultiple(address[] addrs) onlyOwner {
     for (uint iter = 0; iter < addrs.length; iter++) {
-      joinedCrowdsales.push(addrs[iter]));
+      joinedCrowdsales.push(addrs[iter]);
     }
   }
 
