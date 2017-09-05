@@ -214,12 +214,11 @@ contract CrowdsaleExt is Haltable {
       throw;
     }
 
-    uint multiplier = 10 ** token.decimals();
-    if(tokenAmount < earlyParticipantWhitelist[receiver].minCap.times(multiplier)) {
+    if(tokenAmount < earlyParticipantWhitelist[receiver].minCap) {
       // tokenAmount < minCap for investor
       throw;
     }
-    if(tokenAmount > earlyParticipantWhitelist[receiver].maxCap.times(multiplier)) {
+    if(tokenAmount > earlyParticipantWhitelist[receiver].maxCap) {
       // tokenAmount > maxCap for investor
       throw;
     }
@@ -433,12 +432,11 @@ contract CrowdsaleExt is Haltable {
     if (addr != msg.sender && contractAddr != msg.sender) throw;
     uint newMaxCap = earlyParticipantWhitelist[addr].maxCap;
     bool newStatus = earlyParticipantWhitelist[addr].status;
-    uint multiplier = 10 ** token.decimals();
-    uint testMaxCap = earlyParticipantWhitelist[addr].maxCap.times(multiplier) - tokensBought;
-    if (testMaxCap < earlyParticipantWhitelist[addr].minCap.times(multiplier))
+    uint testMaxCap = earlyParticipantWhitelist[addr].maxCap - tokensBought;
+    if (testMaxCap < earlyParticipantWhitelist[addr].minCap)
       newStatus = false;
     else
-      newMaxCap = newMaxCap.minus(tokensBought.divides(multiplier));
+      newMaxCap = newMaxCap.minus(tokensBought);
     earlyParticipantWhitelist[addr] = WhiteListData({status:newStatus, minCap:earlyParticipantWhitelist[addr].minCap, maxCap:newMaxCap});
   }
 

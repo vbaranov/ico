@@ -39,8 +39,6 @@ contract ReservedTokensFinalizeAgent is FinalizeAgent {
     // How many % of tokens the founders and others get
     uint tokensSold = crowdsale.tokensSold();
 
-    uint multiplier = 10 ** token.decimals();
-
     // move reserved tokens in percentage
     for (var j = 0; j < token.reservedTokensDestinationsLen(); j++) {
       uint allocatedBonusInPercentage;
@@ -55,7 +53,7 @@ contract ReservedTokensFinalizeAgent is FinalizeAgent {
     for (var i = 0; i < token.reservedTokensDestinationsLen(); i++) {
       uint allocatedBonusInTokens;
       if (token.getReservedTokensListDim(token.reservedTokensDestinations(i))) {
-        allocatedBonusInTokens = token.getReservedTokensListVal(token.reservedTokensDestinations(i)).times(multiplier);
+        allocatedBonusInTokens = token.getReservedTokensListVal(token.reservedTokensDestinations(i));
         tokensSold = tokensSold.plus(allocatedBonusInTokens);
         token.mint(token.reservedTokensDestinations(i), allocatedBonusInTokens);
       }
