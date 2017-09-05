@@ -25,6 +25,9 @@ contract MintedTokenCappedCrowdsaleExt is CrowdsaleExt {
     maximumSellableTokens = _maximumSellableTokens;
   }
 
+  // Crowdsale maximumSellableTokens has been changed
+  event MaximumSellableTokensChanged(uint newMaximumSellableTokens);
+
   /**
    * Called from invest() to confirm if the curret investment does not break our cap rule.
    */
@@ -47,5 +50,12 @@ contract MintedTokenCappedCrowdsaleExt is CrowdsaleExt {
   function assignTokens(address receiver, uint tokenAmount) private {
     MintableTokenExt mintableToken = MintableTokenExt(token);
     mintableToken.mint(receiver, tokenAmount);
+  }
+
+  function setMaximumSellableTokens(uint tokens) onlyOwner {
+    if (!isUpdatable) throw;
+
+    maximumSellableTokens = tokens;
+    MaximumSellableTokensChanged(maximumSellableTokens);
   }
 }

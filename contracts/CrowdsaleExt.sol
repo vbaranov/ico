@@ -103,6 +103,9 @@ contract CrowdsaleExt is Haltable {
     uint maxCap;
   }
 
+  //is crowdsale updatable
+  bool public isUpdatable;
+
   /** Addresses that are allowed to invest even before ICO offical opens. For testing, for ICO partners, etc. */
   mapping (address => WhiteListData) public earlyParticipantWhitelist;
 
@@ -133,10 +136,13 @@ contract CrowdsaleExt is Haltable {
   // Address early participation whitelist status changed
   event Whitelisted(address addr, bool status);
 
+  // Crowdsale start time has been changed
+  event StartsAtChanged(uint newStartsAt);
+
   // Crowdsale end time has been changed
   event EndsAtChanged(uint newEndsAt);
 
-  function CrowdsaleExt(address _token, PricingStrategy _pricingStrategy, address _multisigWallet, uint _start, uint _end, uint _minimumFundingGoal) {
+  function CrowdsaleExt(address _token, PricingStrategy _pricingStrategy, address _multisigWallet, uint _start, uint _end, uint _minimumFundingGoal, bool _isUpdatable) {
 
     owner = msg.sender;
 
@@ -168,6 +174,8 @@ contract CrowdsaleExt is Haltable {
 
     // Minimum funding goal can be zero
     minimumFundingGoal = _minimumFundingGoal;
+
+    isUpdatable = _isUpdatable;
   }
 
   /**
@@ -464,6 +472,21 @@ contract CrowdsaleExt is Haltable {
     }
   }
 
+  function setStartsAt(uint time) onlyOwner {
+    if (!isUpdatable) throw;
+
+    if(now > time) {
+      throw; // Don't change past
+    }
+
+    if(time > endsAt) {
+      throw;
+    }
+
+    startsAt = time;
+    StartsAtChanged(startsAt);
+  }
+
   /**
    * Allow crowdsale owner to close early or extend the crowdsale.
    *
@@ -475,9 +498,14 @@ contract CrowdsaleExt is Haltable {
    *
    */
   function setEndsAt(uint time) onlyOwner {
+    if (!isUpdatable) throw;
 
     if(now > time) {
       throw; // Don't change past
+    }
+
+    if(startsAt > time) {
+      throw;
     }
 
     endsAt = time;
