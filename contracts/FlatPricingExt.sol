@@ -6,6 +6,7 @@
 
 pragma solidity ^0.4.6;
 
+import "zeppelin/contracts/ownership/Ownable.sol";
 import "./PricingStrategy.sol";
 import "./SafeMathLibExt.sol";
 
@@ -19,8 +20,22 @@ contract FlatPricingExt is PricingStrategy {
   /* How many weis one token costs */
   uint public oneTokenInWei;
 
-  function FlatPricingExt(uint _oneTokenInWei) {
+  bool public isUpdatable;
+
+  // Crowdsale rate has been changed
+  event RateChanged(uint newOneTokenInWei);
+
+  function FlatPricingExt(uint _oneTokenInWei, bool _isUpdatable) onlyOwner {
     oneTokenInWei = _oneTokenInWei;
+
+    isUpdatable = _isUpdatable;
+  }
+
+  function updateRate(uint newOneTokenInWei) {
+    if (!isUpdatable) throw;
+
+    oneTokenInWei = newOneTokenInWei;
+    RateChanged(newOneTokenInWei);
   }
 
   /**

@@ -9,7 +9,7 @@ pragma solidity ^0.4.6;
 /**
  * Interface for defining crowdsale pricing.
  */
-contract PricingStrategy {
+contract PricingStrategy is Ownable {
 
   /** Interface declaration. */
   function isPricingStrategy() public constant returns (bool) {
