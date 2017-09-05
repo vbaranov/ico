@@ -21,7 +21,7 @@ contract MintedTokenCappedCrowdsaleExt is CrowdsaleExt {
   /* Maximum amount of tokens this crowdsale can sell. */
   uint public maximumSellableTokens;
 
-  function MintedTokenCappedCrowdsaleExt(address _token, PricingStrategy _pricingStrategy, address _multisigWallet, uint _start, uint _end, uint _minimumFundingGoal, uint _maximumSellableTokens) CrowdsaleExt(_token, _pricingStrategy, _multisigWallet, _start, _end, _minimumFundingGoal) {
+  function MintedTokenCappedCrowdsaleExt(address _token, PricingStrategy _pricingStrategy, address _multisigWallet, uint _start, uint _end, uint _minimumFundingGoal, uint _maximumSellableTokens, bool _isUpdatable) CrowdsaleExt(_token, _pricingStrategy, _multisigWallet, _start, _end, _minimumFundingGoal, _isUpdatable) {
     maximumSellableTokens = _maximumSellableTokens;
   }
 
