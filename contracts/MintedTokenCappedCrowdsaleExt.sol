@@ -29,19 +29,16 @@ contract MintedTokenCappedCrowdsaleExt is CrowdsaleExt {
    * Called from invest() to confirm if the curret investment does not break our cap rule.
    */
   function isBreakingCap(uint weiAmount, uint tokenAmount, uint weiRaisedTotal, uint tokensSoldTotal) constant returns (bool limitBroken) {
-    uint multiplier = 10 ** token.decimals();
-    return tokensSoldTotal > maximumSellableTokens.times(multiplier);
+    return tokensSoldTotal > maximumSellableTokens;
   }
 
   function isBreakingInvestorCap(address addr, uint tokenAmount) constant returns (bool limitBroken) {
-    uint multiplier = 10 ** token.decimals();
     uint maxCap = earlyParticipantWhitelist[addr].maxCap;
-    return (tokenAmountOf[addr].plus(tokenAmount)) > maxCap.times(multiplier);
+    return (tokenAmountOf[addr].plus(tokenAmount)) > maxCap;
   }
 
   function isCrowdsaleFull() public constant returns (bool) {
-    uint multiplier = 10 ** token.decimals();
-    return tokensSold >= maximumSellableTokens.times(multiplier);
+    return tokensSold >= maximumSellableTokens;
   }
 
   /**

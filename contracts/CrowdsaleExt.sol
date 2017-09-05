@@ -223,24 +223,6 @@ contract CrowdsaleExt is Haltable {
       throw;
     }
 
-    if(investedAmountOf[receiver] == 0) {
-       // A new investor
-       investorCount++;
-    }
-
-    uint num = 0;
-    for (var i = 0; i < joinedCrowdsalesLen; i++) {
-      if (this == joinedCrowdsales[i]) 
-        num = i;
-    }
-
-    if (num + 1 < joinedCrowdsalesLen) {
-      for (var j = num + 1; j < joinedCrowdsalesLen; j++) {
-        CrowdsaleExt crowdsale = CrowdsaleExt(joinedCrowdsales[j]);
-        crowdsale.updateEarlyParicipantWhitelist(msg.sender, this, tokenAmount);
-      }
-    }
-
     // Check that we did not bust the investor's cap
     if(isBreakingInvestorCap(receiver, tokenAmount)) {
       throw;
@@ -261,6 +243,24 @@ contract CrowdsaleExt is Haltable {
     // Check that we did not bust the cap
     if(isBreakingCap(weiAmount, tokenAmount, weiRaised, tokensSold)) {
       throw;
+    }
+
+    if(investedAmountOf[receiver] == 0) {
+       // A new investor
+       investorCount++;
+    }
+
+    uint num = 0;
+    for (var i = 0; i < joinedCrowdsalesLen; i++) {
+      if (this == joinedCrowdsales[i]) 
+        num = i;
+    }
+
+    if (num + 1 < joinedCrowdsalesLen) {
+      for (var j = num + 1; j < joinedCrowdsalesLen; j++) {
+        CrowdsaleExt crowdsale = CrowdsaleExt(joinedCrowdsales[j]);
+        crowdsale.updateEarlyParicipantWhitelist(msg.sender, this, tokenAmount);
+      }
     }
 
     assignTokens(receiver, tokenAmount);
