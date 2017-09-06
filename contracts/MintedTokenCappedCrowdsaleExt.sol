@@ -53,6 +53,11 @@ contract MintedTokenCappedCrowdsaleExt is CrowdsaleExt {
   }
 
   function setMaximumSellableTokens(uint tokens) onlyOwner {
+    if (finalized) throw;
+    
+    CrowdsaleExt lastCrowdsale = CrowdsaleExt(lastCrowdsale);
+    if (lastCrowdsale.finalized) throw;
+
     if (!isUpdatable) throw;
 
     maximumSellableTokens = tokens;

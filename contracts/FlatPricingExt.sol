@@ -22,6 +22,8 @@ contract FlatPricingExt is PricingStrategy {
 
   bool public isUpdatable;
 
+  address public lastCrowdsale;
+
   // Crowdsale rate has been changed
   event RateChanged(uint newOneTokenInWei);
 
@@ -31,8 +33,15 @@ contract FlatPricingExt is PricingStrategy {
     isUpdatable = _isUpdatable;
   }
 
+  function setLastCrowdsale(address addr) onlyOwner {
+    lastCrowdsale = addr;
+  }
+
   function updateRate(uint newOneTokenInWei) {
     if (!isUpdatable) throw;
+
+    CrowdsaleExt lastCrowdsale = CrowdsaleExt(lastCrowdsale);
+    if (lastCrowdsale.finalized) throw;
 
     oneTokenInWei = newOneTokenInWei;
     RateChanged(newOneTokenInWei);

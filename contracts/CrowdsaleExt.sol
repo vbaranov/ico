@@ -473,6 +473,11 @@ contract CrowdsaleExt is Haltable {
   }
 
   function setStartsAt(uint time) onlyOwner {
+    if (finalized) throw;
+
+    CrowdsaleExt lastCrowdsale = CrowdsaleExt(lastCrowdsale);
+    if (lastCrowdsale.finalized) throw;
+
     if (!isUpdatable) throw;
 
     if(now > time) {
@@ -498,6 +503,11 @@ contract CrowdsaleExt is Haltable {
    *
    */
   function setEndsAt(uint time) onlyOwner {
+    if (finalized) throw;
+    
+    CrowdsaleExt lastCrowdsale = CrowdsaleExt(lastCrowdsale);
+    if (lastCrowdsale.finalized) throw;
+
     if (!isUpdatable) throw;
 
     if(now > time) {
@@ -506,6 +516,18 @@ contract CrowdsaleExt is Haltable {
 
     if(startsAt > time) {
       throw;
+    }
+
+    for (var i = 0; i < joinedCrowdsalesLen; i++) {
+      if (this == joinedCrowdsales[i]) 
+        num = i;
+    }
+
+    if (num + 1 < joinedCrowdsalesLen) {
+      for (var j = num + 1; j < joinedCrowdsalesLen; j++) {
+        CrowdsaleExt crowdsale = CrowdsaleExt(joinedCrowdsales[j]);
+        if (time > crowdsale.startsAt) throw;
+      }
     }
 
     endsAt = time;
