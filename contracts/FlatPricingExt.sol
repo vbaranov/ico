@@ -41,7 +41,7 @@ contract FlatPricingExt is PricingStrategy {
   function updateRate(uint newOneTokenInWei) onlyOwner {
     if (!isUpdatable) throw;
 
-    CrowdsaleExt lastCrowdsaleCntrct = CrowdsaleExt(lastCrowdsaleCntrct);
+    CrowdsaleExt lastCrowdsaleCntrct = CrowdsaleExt(lastCrowdsale);
     if (lastCrowdsaleCntrct.finalized()) throw;
 
     oneTokenInWei = newOneTokenInWei;

@@ -485,7 +485,7 @@ contract CrowdsaleExt is Haltable {
       throw;
     }
 
-    CrowdsaleExt lastCrowdsaleCntrct = CrowdsaleExt(lastCrowdsaleCntrct);
+    CrowdsaleExt lastCrowdsaleCntrct = CrowdsaleExt(lastCrowdsale);
     if (lastCrowdsaleCntrct.finalized()) throw;
 
     startsAt = time;
@@ -515,7 +515,7 @@ contract CrowdsaleExt is Haltable {
       throw;
     }
 
-    CrowdsaleExt lastCrowdsaleCntrct = CrowdsaleExt(lastCrowdsaleCntrct);
+    CrowdsaleExt lastCrowdsaleCntrct = CrowdsaleExt(lastCrowdsale);
     if (lastCrowdsaleCntrct.finalized()) throw;
 
     uint num = 0;
