@@ -6,6 +6,7 @@
 
 pragma solidity ^0.4.6;
 
+import "./CrowdsaleExt.sol";
 import "zeppelin/contracts/ownership/Ownable.sol";
 import "./PricingStrategy.sol";
 import "./SafeMathLibExt.sol";
