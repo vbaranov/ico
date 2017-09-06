@@ -42,7 +42,7 @@ contract FlatPricingExt is PricingStrategy {
     if (!isUpdatable) throw;
 
     CrowdsaleExt lastCrowdsale = CrowdsaleExt(lastCrowdsale);
-    if (lastCrowdsale.finalized) throw;
+    if (lastCrowdsale.finalized()) throw;
 
     oneTokenInWei = newOneTokenInWei;
     RateChanged(newOneTokenInWei);

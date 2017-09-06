@@ -56,7 +56,7 @@ contract MintedTokenCappedCrowdsaleExt is CrowdsaleExt {
     if (finalized) throw;
     
     CrowdsaleExt lastCrowdsale = CrowdsaleExt(lastCrowdsale);
-    if (lastCrowdsale.finalized) throw;
+    if (lastCrowdsale.finalized()) throw;
 
     if (!isUpdatable) throw;
 

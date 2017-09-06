@@ -476,7 +476,7 @@ contract CrowdsaleExt is Haltable {
     if (finalized) throw;
 
     CrowdsaleExt lastCrowdsale = CrowdsaleExt(lastCrowdsale);
-    if (lastCrowdsale.finalized) throw;
+    if (lastCrowdsale.finalized()) throw;
 
     if (!isUpdatable) throw;
 
@@ -506,7 +506,7 @@ contract CrowdsaleExt is Haltable {
     if (finalized) throw;
     
     CrowdsaleExt lastCrowdsale = CrowdsaleExt(lastCrowdsale);
-    if (lastCrowdsale.finalized) throw;
+    if (lastCrowdsale.finalized()) throw;
 
     if (!isUpdatable) throw;
 
@@ -527,7 +527,7 @@ contract CrowdsaleExt is Haltable {
     if (num + 1 < joinedCrowdsalesLen) {
       for (var j = num + 1; j < joinedCrowdsalesLen; j++) {
         CrowdsaleExt crowdsale = CrowdsaleExt(joinedCrowdsales[j]);
-        if (time > crowdsale.startsAt) throw;
+        if (time > crowdsale.startsAt()) throw;
       }
     }
 
