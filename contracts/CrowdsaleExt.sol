@@ -475,9 +475,6 @@ contract CrowdsaleExt is Haltable {
   function setStartsAt(uint time) onlyOwner {
     if (finalized) throw;
 
-    CrowdsaleExt lastCrowdsale = CrowdsaleExt(lastCrowdsale);
-    if (lastCrowdsale.finalized()) throw;
-
     if (!isUpdatable) throw;
 
     if(now > time) {
@@ -504,9 +501,6 @@ contract CrowdsaleExt is Haltable {
    */
   function setEndsAt(uint time) onlyOwner {
     if (finalized) throw;
-    
-    CrowdsaleExt lastCrowdsale = CrowdsaleExt(lastCrowdsale);
-    if (lastCrowdsale.finalized()) throw;
 
     if (!isUpdatable) throw;
 
