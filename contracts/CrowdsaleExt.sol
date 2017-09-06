@@ -485,6 +485,9 @@ contract CrowdsaleExt is Haltable {
       throw;
     }
 
+    CrowdsaleExt lastCrowdsaleCntrct = CrowdsaleExt(lastCrowdsaleCntrct);
+    if (lastCrowdsaleCntrct.finalized()) throw;
+
     startsAt = time;
     StartsAtChanged(startsAt);
   }
@@ -511,6 +514,9 @@ contract CrowdsaleExt is Haltable {
     if(startsAt > time) {
       throw;
     }
+
+    CrowdsaleExt lastCrowdsaleCntrct = CrowdsaleExt(lastCrowdsaleCntrct);
+    if (lastCrowdsaleCntrct.finalized()) throw;
 
     uint num = 0;
     for (var i = 0; i < joinedCrowdsalesLen; i++) {
