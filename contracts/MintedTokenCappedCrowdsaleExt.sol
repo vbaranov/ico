@@ -21,7 +21,7 @@ contract MintedTokenCappedCrowdsaleExt is CrowdsaleExt {
   /* Maximum amount of tokens this crowdsale can sell. */
   uint public maximumSellableTokens;
 
-  function MintedTokenCappedCrowdsaleExt(address _token, PricingStrategy _pricingStrategy, address _multisigWallet, uint _start, uint _end, uint _minimumFundingGoal, uint _maximumSellableTokens, bool _isUpdatable) CrowdsaleExt(_token, _pricingStrategy, _multisigWallet, _start, _end, _minimumFundingGoal, _isUpdatable) {
+  function MintedTokenCappedCrowdsaleExt(address _token, PricingStrategy _pricingStrategy, address _multisigWallet, uint _start, uint _end, uint _minimumFundingGoal, uint _maximumSellableTokens, bool _isUpdatable, bool _isWhiteListed) CrowdsaleExt(_token, _pricingStrategy, _multisigWallet, _start, _end, _minimumFundingGoal, _isUpdatable, isWhiteListed) {
     maximumSellableTokens = _maximumSellableTokens;
   }
 
@@ -36,6 +36,7 @@ contract MintedTokenCappedCrowdsaleExt is CrowdsaleExt {
   }
 
   function isBreakingInvestorCap(address addr, uint tokenAmount) constant returns (bool limitBroken) {
+    if (!isWhiteListed) throw;
     uint maxCap = earlyParticipantWhitelist[addr].maxCap;
     return (tokenAmountOf[addr].plus(tokenAmount)) > maxCap;
   }
