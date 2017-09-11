@@ -229,7 +229,7 @@ contract CrowdsaleExt is Haltable {
     }
 
     if(isWhiteListed) {
-      if(tokenAmount < earlyParticipantWhitelist[receiver].minCap) {
+      if(tokenAmount < earlyParticipantWhitelist[receiver].minCap && tokenAmountOf[receiver] == 0) {
         // tokenAmount < minCap for investor
         throw;
       }
