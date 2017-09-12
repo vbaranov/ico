@@ -42,8 +42,8 @@ contract ReservedTokensFinalizeAgent is FinalizeAgent {
     // move reserved tokens in percentage
     for (var j = 0; j < token.reservedTokensDestinationsLen(); j++) {
       uint allocatedBonusInPercentage;
-      if (!token.getReservedTokensListDim(token.reservedTokensDestinations(j))) {
-        allocatedBonusInPercentage = tokensSold*token.getReservedTokensListVal(token.reservedTokensDestinations(j))/100;
+      if (!token.getReservedTokensListValInPercentage(token.reservedTokensDestinations(j)) > 0) {
+        allocatedBonusInPercentage = tokensSold*token.getReservedTokensListValInPercentage(token.reservedTokensDestinations(j))/100;
         tokensSold = tokensSold.plus(allocatedBonusInPercentage);
         token.mint(token.reservedTokensDestinations(j), allocatedBonusInPercentage);
       }
@@ -52,8 +52,8 @@ contract ReservedTokensFinalizeAgent is FinalizeAgent {
     // move reserved tokens in tokens
     for (var i = 0; i < token.reservedTokensDestinationsLen(); i++) {
       uint allocatedBonusInTokens;
-      if (token.getReservedTokensListDim(token.reservedTokensDestinations(i))) {
-        allocatedBonusInTokens = token.getReservedTokensListVal(token.reservedTokensDestinations(i));
+      if (token.getReservedTokensListValInTokens(token.reservedTokensDestinations(i)) > 0) {
+        allocatedBonusInTokens = token.getReservedTokensListValInTokens(token.reservedTokensDestinations(i));
         tokensSold = tokensSold.plus(allocatedBonusInTokens);
         token.mint(token.reservedTokensDestinations(i), allocatedBonusInTokens);
       }

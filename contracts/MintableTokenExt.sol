@@ -30,31 +30,31 @@ contract MintableTokenExt is StandardToken, Ownable {
   event MintingAgentChanged(address addr, bool state  );
 
   struct ReservedTokensData {
-    bool isInTokens;
-    uint val;
+    uint inTokens;
+    uint inPercentage;
   }
 
   mapping (address => ReservedTokensData) public reservedTokensList;
   address[] public reservedTokensDestinations;
   uint public reservedTokensDestinationsLen = 0;
 
-  function setReservedTokensList(address addr, bool isInTokens, uint val) onlyOwner {
+  function setReservedTokensList(address addr, uint inTokens, uint inPercentage) onlyOwner {
     reservedTokensDestinations.push(addr);
     reservedTokensDestinationsLen++;
-    reservedTokensList[addr] = ReservedTokensData({isInTokens:isInTokens, val:val});
+    reservedTokensList[addr] = ReservedTokensData({inTokens:inTokens, inPercentage:inPercentage});
   }
 
-  function getReservedTokensListVal(address addr) constant returns (uint val) {
-    return reservedTokensList[addr].val;
+  function getReservedTokensListValInTokens(address addr) constant returns (uint inTokens) {
+    return reservedTokensList[addr].inTokens;
   }
 
-  function getReservedTokensListDim(address addr) constant returns (bool isInTokens) {
-    return reservedTokensList[addr].isInTokens;
+  function getReservedTokensListValInPercentage(address addr) constant returns (uint inPercentage) {
+    return reservedTokensList[addr].inPercentage;
   }
 
-  function setReservedTokensListMultiple(address[] addrs, bool[] dims, uint[] vals) onlyOwner {
+  function setReservedTokensListMultiple(address[] addrs, uint[] inTokens, uint[] inPercentage) onlyOwner {
     for (uint iterator = 0; iterator < addrs.length; iterator++) {
-      setReservedTokensList(addrs[iterator], dims[iterator], vals[iterator]);
+      setReservedTokensList(addrs[iterator], inTokens[iterator], inPercentage[iterator]);
     }
   }
 
