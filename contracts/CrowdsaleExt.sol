@@ -449,16 +449,12 @@ contract CrowdsaleExt is Haltable {
   }
 
   function updateEarlyParicipantWhitelist(address addr, address contractAddr, uint tokensBought) {
+    if (tokensBought < earlyParticipantWhitelist[addr].minCap) throw;
     if (!isWhiteListed) throw;
     if (addr != msg.sender && contractAddr != msg.sender) throw;
     uint newMaxCap = earlyParticipantWhitelist[addr].maxCap;
-    bool newStatus = earlyParticipantWhitelist[addr].status;
-    uint testMaxCap = earlyParticipantWhitelist[addr].maxCap - tokensBought;
-    if (testMaxCap < earlyParticipantWhitelist[addr].minCap)
-      newStatus = false;
-    else
-      newMaxCap = newMaxCap.minus(tokensBought);
-    earlyParticipantWhitelist[addr] = WhiteListData({status:newStatus, minCap:earlyParticipantWhitelist[addr].minCap, maxCap:newMaxCap});
+    newMaxCap = newMaxCap.minus(tokensBought);
+    earlyParticipantWhitelist[addr] = WhiteListData({status:earlyParticipantWhitelist[addr].status, minCap:0, maxCap:newMaxCap});
   }
 
   function updateJoinedCrowdsales(address addr) onlyOwner {
