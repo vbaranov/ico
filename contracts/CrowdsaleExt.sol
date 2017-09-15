@@ -239,7 +239,11 @@ contract CrowdsaleExt is Haltable {
       }
 
       // Check that we did not bust the investor's cap
-      if(isBreakingInvestorCap(receiver, tokenAmount)) {
+      if (isBreakingInvestorCap(receiver, tokenAmount)) {
+        throw;
+      }
+    } else {
+      if(tokenAmount < token.minCap && tokenAmountOf[receiver] == 0) {
         throw;
       }
     }
