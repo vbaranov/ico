@@ -10,7 +10,7 @@ import "./SafeMathLibExt.sol";
 import "./Haltable.sol";
 import "./PricingStrategy.sol";
 import "./FinalizeAgent.sol";
-import "./FractionalERC20.sol";
+import "./FractionalERC20Ext.sol";
 
 
 /**
@@ -33,7 +33,7 @@ contract CrowdsaleExt is Haltable {
   using SafeMathLibExt for uint;
 
   /* The token we are selling */
-  FractionalERC20 public token;
+  FractionalERC20Ext public token;
 
   /* How we are going to price our offering */
   PricingStrategy public pricingStrategy;
@@ -148,7 +148,7 @@ contract CrowdsaleExt is Haltable {
 
     owner = msg.sender;
 
-    token = FractionalERC20(_token);
+    token = FractionalERC20Ext(_token);
 
     setPricingStrategy(_pricingStrategy);
 
