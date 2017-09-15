@@ -243,7 +243,7 @@ contract CrowdsaleExt is Haltable {
         throw;
       }
     } else {
-      if(tokenAmount < token.minCap && tokenAmountOf[receiver] == 0) {
+      if(tokenAmount < token.minCap() && tokenAmountOf[receiver] == 0) {
         throw;
       }
     }
