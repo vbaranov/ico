@@ -4,7 +4,7 @@
  * Licensed under the Apache License, version 2.0: https://github.com/TokenMarketNet/ico/blob/master/LICENSE.txt
  */
 
-pragma solidity ^0.4.6;
+pragma solidity ^0.4.12;
 
 import "./CrowdsaleExt.sol";
 import "zeppelin/contracts/ownership/Ownable.sol";
@@ -29,6 +29,7 @@ contract FlatPricingExt is PricingStrategy, Ownable {
   event RateChanged(uint newOneTokenInWei);
 
   function FlatPricingExt(uint _oneTokenInWei, bool _isUpdatable) onlyOwner {
+    require(_oneTokenInWei > 0);
     oneTokenInWei = _oneTokenInWei;
 
     isUpdatable = _isUpdatable;
