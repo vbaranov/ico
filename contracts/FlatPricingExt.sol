@@ -14,7 +14,7 @@ import "./SafeMathLibExt.sol";
 /**
  * Fixed crowdsale pricing - everybody gets the same price.
  */
-contract FlatPricingExt is PricingStrategy {
+contract FlatPricingExt is PricingStrategy, Ownable {
 
   using SafeMathLibExt for uint;
 
