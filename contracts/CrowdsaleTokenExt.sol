@@ -122,7 +122,7 @@ contract CrowdsaleTokenExt is ReleasableToken, MintableTokenExt, UpgradeableToke
   function claimTokens(address _token) public onlyOwner {
     require(_token != address(0));
 
-    CrowdsaleTokenExt token = CrowdsaleTokenExt(_token);
+    ERC20Basic token = ERC20Basic(_token);
     uint balance = token.balanceOf(this);
     token.transfer(owner, balance);
 

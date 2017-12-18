@@ -5,6 +5,11 @@ const ReservedTokensFinalizeAgent = artifacts.require("./ReservedTokensFinalizeA
 
 const constants = require("../constants");
 
+require('chai')
+  .use(require('chai-as-promised'))
+  .use(require('chai-bignumber')(web3.BigNumber))
+  .should();
+
 contract('CrowdsaleTokenExt', function(accounts) {
 	it("should get absolute reserved tokens for investor", function() {
 		return CrowdsaleTokenExt.deployed().then(function(instance) {
@@ -80,25 +85,25 @@ contract('CrowdsaleTokenExt', function(accounts) {
 			return Promise.resolve()
 				// first, owner has all TT1 tokens
 				.then(() => token1.balanceOf(owner))
-				.then(balance => assert.equal(balance, 100))
+				.then(balance => balance.should.be.bignumber.equal(100))
 				.then(() => token1.balanceOf(token2.address))
-				.then(balance => assert.equal(balance, 0))
+				.then(balance => balance.should.be.bignumber.equal(0))
 				// owner transfers 25 TT1 to token2 address by mistake
 				.then(() => token1.setReleaseAgent(owner))
 				.then(() => token1.releaseTokenTransfer())
 				.then(() => token1.transfer(token2.address, 25))
 				// now owner has 75 tokens and token2 has 25
 				.then(() => token1.balanceOf(owner))
-				.then(balance => assert.equal(balance, 75))
+				.then(balance => balance.should.be.bignumber.equal(75))
 				.then(() => token1.balanceOf(token2.address))
-				.then(balance => assert.equal(balance, 25))
+				.then(balance => balance.should.be.bignumber.equal(25))
 				// owner claims TT1 tokens in token2
 				.then(() => token2.claimTokens(token1.address))
 				// the tokens are transferred
 				.then(() => token1.balanceOf(token2.address))
-				.then(balance => assert.equal(balance, 0))
+				.then(balance => balance.should.be.bignumber.equal(0))
 				.then(() => token1.balanceOf(owner))
-				.then(balance => assert.equal(balance, 100))
+				.then(balance => balance.should.be.bignumber.equal(100))
 		})
     })
 });
